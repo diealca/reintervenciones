@@ -9,6 +9,7 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/d3-queue/3.0.3/d3-queue.js'></script>
+  <script src="http://momentjs.com/downloads/moment.min.js"></script>
   <style type="text/css">
       .tdesc{
         border: 1px solid;
@@ -25,13 +26,21 @@
   
 </div>
 <script>
+    function dias(fechaIni, fechaFin)
+    {
+      
+      var fecha1 = new Date(fechaIni.substring(6,10),fechaIni.substring(3,5),fechaIni.substring(0,2));
+      var fecha2 = new Date(fechaFin.substring(6,10),fechaFin.substring(3,5),fechaFin.substring(0,2));
 
+      var diasDif = fecha2.getTime() - fecha1.getTime();
+      var dias = Math.round(diasDif/(1000 * 60 * 60 * 24));
+      return dias + 1;
+    }  
     //Organizar los datos
     var arrTot = {};
     function drawEvery(error, d){
       $("#accordion").html("");
       delete d[0];
-      console.log(d);
       arrTot = {"cirugias": {}, "servicios": [], "procedimientos": [], "pacientes": {}};
       d.forEach(function(ds){
           //if(ds["IDENTIFICADOR"] != "0"){
@@ -39,7 +48,7 @@
               arrTot["cirugias"]["P" + ds["IDENTIFICADOR"] + ds["FECHAPROC"]] = {"paciente" : ds["IDENTIFICADOR"], "fecha": ds["FECHAPROC"], "edad": ds["EDAD"], "factura": ds["FACTURA"], "fuerza": ds["FUERZA"], "genero": ds["GENERO"], "valor": ds["VR_TOTAL_FACTURA"], "procedimientos": [], "tipoAtencion": ds["TIPOATENCION"]}
                 if(!arrTot["pacientes"][ds["IDENTIFICADOR"]])
                   arrTot["pacientes"][ds["IDENTIFICADOR"]] = {"cantCir": 0, "cirugias": []}
-                arrTot["pacientes"][ds["IDENTIFICADOR"]]["cirugias"].push({"id": "P" + ds["IDENTIFICADOR"] + ds["FECHAPROC"], "fecha": ds["FECHAPROC"]});
+                arrTot["pacientes"][ds["IDENTIFICADOR"]]["cirugias"].push({"id": "P" + ds["IDENTIFICADOR"] + ds["FECHAPROC"], "fecha": ds["FECHAPROC"].replace(/\./g, "")});
                 arrTot["pacientes"][ds["IDENTIFICADOR"]]["cantCir"]++
             }
             arrTot["cirugias"]["P" + ds["IDENTIFICADOR"] + ds["FECHAPROC"]]["procedimientos"].push({"especialidad": ds["ESPECIALIDAD"], "nomProc": ds["NOMBREPROCEDIMIENTO"]}) 
@@ -52,12 +61,12 @@
       })
 
       //Una muestra pequeña de lo que hay en cirugias
-      var i = 0;
+      /*var i = 0;
       for(var k in arrTot["cirugias"]){
         console.log(arrTot["cirugias"][k])
         i++;
         if(i==10) break;
-      }
+      }*/
 
       //Una muestra de los pacientes con reintervenciones
       var i = 1; var reint = 0;
@@ -65,18 +74,21 @@
         
         if(arrTot["pacientes"][k]["cantCir"] > 1){
           reint = reint + arrTot["pacientes"][k]["cantCir"] - 1;
-          if(i < 20) {
+          if(i < 5) {
           var txt = "<h3>" +  i + " Paciente: " + k + " Cantidad: " + arrTot["pacientes"][k]["cantCir"] + "</h3><div><table class='tdesc'>";
           var t = 1;
           for(j in arrTot["pacientes"][k]["cirugias"]){
+            var cir = arrTot["pacientes"][k]["cirugias"][j];
             var id = arrTot["pacientes"][k]["cirugias"][j].id;
-            txt = txt + '<tr><td rowspan="4">' + t + '</td><td>Fuerza:</td><td>' +  arrTot["cirugias"][id].fuerza + '</td></tr>';
+            cir["reint"] = (j>0)? dias(arrTot["cirugias"][arrTot["pacientes"][k]["cirugias"][j-1].id].fecha, arrTot["cirugias"][id].fecha):0; 
+            txt = txt + '<tr><td rowspan="5">' + t + '</td><td>Fuerza:</td><td>' +  arrTot["cirugias"][id].fuerza + '</td></tr>';
             txt = txt +  '<tr><td>Fecha:</td><td>' +  arrTot["cirugias"][id].fecha + '</td></tr>';
             txt = txt +  '<tr><td>Valor:</td><td>' +  arrTot["cirugias"][id].valor + '</td></tr>';
+            txt = txt +  '<tr><td>Dias han pasado:</td><td>' +  cir["reint"] + '</td></tr>';
             txt = txt +  '<tr><td>Procedimientos:</td><td>';
             for(var h in arrTot["cirugias"][id].procedimientos){
-               var cir = arrTot["cirugias"][id]["procedimientos"][h];
-               txt = txt +  '<div>' + cir.especialidad + ': ' + cir.nomProc + '</div>';
+               var pro = arrTot["cirugias"][id]["procedimientos"][h];
+               txt = txt +  '<div>' + pro.especialidad + ': ' + pro.nomProc + '</div>';
             }
             txt = txt + '</td></tr>';
             t++;
