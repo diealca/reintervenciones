@@ -21,13 +21,17 @@
   </style>
 </head>
 <body>
-
+<div id="accordion">
+  
+</div>
 <script>
 
     //Organizar los datos
     var arrTot = {};
     function drawEvery(error, d){
+      $("#accordion").html("");
       delete d[0];
+      console.log(d);
       arrTot = {"cirugias": {}, "servicios": [], "procedimientos": [], "pacientes": {}};
       d.forEach(function(ds){
           //if(ds["IDENTIFICADOR"] != "0"){
@@ -95,7 +99,7 @@
      $("body").append("<div>Hay " +  reint+ " reintervenciones</div>")
 
     }
-
+    $("#accordion").html("Cargando datos");
     d3.queue()
       .defer(d3.csv, 'data.csv')
       .await(drawEvery)
@@ -103,9 +107,7 @@
 
   </script>
  
-<div id="accordion">
-  
-</div>
+
  
  
 </body>
