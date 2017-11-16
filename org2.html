@@ -45,7 +45,7 @@
 
       var i = 1; var reint = 0;
       for(var k in d){
-          if(["Ij9Oj", "FXnMI", "pAKqI"].indexOf(d[k].id) > -1){
+          if(["Ij9Oj", "FXnMI", "pAKqI", "hfHCs", "jFQEd", "Ij9Oj"].indexOf(d[k].id) > -1){
           var txt = "<h3>" +  i + " Paciente: " + d[k].id + " Cantidad: " + d[k].cirugias.length + "</h3><div><table class='tdesc'>";
           var t = 1;
           for(j in d[k]["cirugias"]){
@@ -57,7 +57,7 @@
             txt = txt +  '<tr><td>Procedimientos:</td><td>';
             for(var h in cir.procedimientos){
                var pro = cir.procedimientos[h];
-               txt = txt +  '<div>' + pro.especialidad + ': ' + pro.nomProc + '</div>';
+               txt = txt +  '<div>Especialidad: ' + pro.especialidad + ' -- Procedimiento ' + pro.nomProc + '</div>';
             }
             txt = txt + '</td></tr>';
             t++;
