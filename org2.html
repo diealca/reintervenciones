@@ -46,7 +46,7 @@
       var i = 1; var reint = 0;
       for(var k in d){
           if(["Ij9Oj", "FXnMI", "pAKqI", "hfHCs", "jFQEd", "Ij9Oj"].indexOf(d[k].id) > -1){
-          var txt = "<h3>" +  i + " Paciente: " + d[k].id + " Cantidad: " + d[k].cirugias.length + "</h3><div><table class='tdesc'>";
+          var txt = "<h3>" +  i + " Paciente: " + d[k].id + " Cantidad: " + d[k].cirugias.length + " Reintervenciones: " + d[k].reint + "</h3><div><table class='tdesc'>";
           var t = 1;
           for(j in d[k]["cirugias"]){
             var cir = d[k]["cirugias"][j];
@@ -80,7 +80,7 @@
     }
     $("#accordion").html("Cargando datos");
     d3.queue()
-      .defer(d3.json, 'file.json')
+      .defer(d3.json, 'filenew.json')
       .await(drawEvery)
 
 
