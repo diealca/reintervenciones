@@ -11,14 +11,15 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/d3-queue/3.0.3/d3-queue.js'></script>
   <script src="http://momentjs.com/downloads/moment.min.js"></script>
   <style type="text/css">
-      .tdesc{
-        border: 1px solid;
-        font-size: 10px;
-        
-      }
-      .tdesc tr td{
+      
+      tr td{
         vertical-align: text-top;
+        font-size: 10px;
       }
+      .tdesc td{
+        border-top: 1px solid;
+      }
+
   </style>
 </head>
 <body>
@@ -45,15 +46,15 @@
 
       var i = 1; var reint = 0;
       for(var k in d){
-          if(["Ij9Oj", "FXnMI", "pAKqI", "hfHCs", "jFQEd", "Ij9Oj"].indexOf(d[k].id) > -1){
-          var txt = "<h3>" +  i + " Paciente: " + d[k].id + " Cantidad: " + d[k].cirugias.length + " Reintervenciones: " + d[k].reint + "</h3><div><table class='tdesc'>";
+          //if(["Ij9Oj", "FXnMI", "pAKqI", "hfHCs", "jFQEd", "Ij9Oj"].indexOf(d[k].id) > -1){
+          var txt = "<h3>" +  i + " Paciente: " + d[k].id + " Reintervenciones: " + d[k].reint + "</h3><div><table>";
           var t = 1;
           for(j in d[k]["cirugias"]){
             var cir = d[k]["cirugias"][j];
-            txt = txt + '<tr><td rowspan="5">' + t + '</td><td>Fuerza:</td><td>' +  d[k].fuerza + '</td></tr>';
-            txt = txt +  '<tr><td>Fecha:</td><td>' +  cir.fecha + '</td></tr>';
+            txt = txt + '<tr class="tdesc"><td rowspan="5">' + t + '</td><td>Fecha:</td><td>' +  cir.fecha + '</td></tr>';
             txt = txt +  '<tr><td>Valor:</td><td>' +  cir.valorfactura + '</td></tr>';
             txt = txt +  '<tr><td>Dias han pasado:</td><td>' +  cir.daysPast + '</td></tr>';
+            txt = txt +  '<tr><td>Proc Indice:</td><td> Especialidad: ' +  cir.indice.esp + ' -- Procedimiento: ' + cir.indice.proc + '</td></tr>';
             txt = txt +  '<tr><td>Procedimientos:</td><td>';
             for(var h in cir.procedimientos){
                var pro = cir.procedimientos[h];
@@ -67,7 +68,7 @@
           $("#accordion").append(txt);
 
           i++;
-        }
+        //}
        } 
         
       
@@ -80,7 +81,7 @@
     }
     $("#accordion").html("Cargando datos");
     d3.queue()
-      .defer(d3.json, 'filenew.json')
+      .defer(d3.json, 'filePac.json')
       .await(drawEvery)
 
 
