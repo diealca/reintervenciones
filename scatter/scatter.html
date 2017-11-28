@@ -102,12 +102,13 @@ var checkbox = controls.append("input")
 controls.append("span")
     .text("Collision detection");
     
-    
+var format = d3.format("$,");
+
  var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<strong>Procedimiento:</strong> <span>" + d.nomProc + "</span><br> <strong>Reintervenciones:</strong> <span>" + d.reintervenciones + "</span><br> <strong>Costo:</strong> <span>$" + d.costo + "</span>";
+    return "<strong>Procedimiento:</strong> <span>" + d.nomProc + "</span><br> <strong>Reintervenciones:</strong> <span>" + d.reintervenciones + "</span><br> <strong>Costo:</strong> <span>" + format(d.costo) + "</span>";
   })
   svg.call(tip);
   
@@ -145,7 +146,7 @@ d3.json("../fileDi.json", function(error, data) {
     .nodes(datos)
     .size([width, height])
     .on("tick", tick)
-    .charge(-10)
+    .charge(1)
     .gravity(0)
     .chargeDistance(20);
 
@@ -189,8 +190,8 @@ d3.json("../fileDi.json", function(error, data) {
        .on('mouseover', tip.show)
    .on('mouseout', tip.hide)
       .attr("r", radius)
-      .attr("cx", function(d) { return x(d.costo); })
-      .attr("cy", function(d) { return y(d.reintervenciones); })
+      .attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; })
       .style("fill", function(d) { return d.color; });
 
       
@@ -238,7 +239,7 @@ d3.json("../fileDi.json", function(error, data) {
 
   // Resolve collisions between nodes.
   function collide(alpha) {
-    var quadtree = d3.geom.quadtree(data);
+    var quadtree = d3.geom.quadtree(datos);
     return function(d) {
       var r = d.radius + radius + padding,
           nx1 = d.x - r,
