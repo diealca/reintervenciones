@@ -11,9 +11,9 @@
 
 
 var pac = {};
-var width = 700,
-    height = 700
-    mtop = 30;
+var width = 550,
+    height = 600,
+    mtop = 80;
 var tra = d3.transition()
       .duration(2000);
 var x = d3.scaleLinear()
@@ -28,62 +28,62 @@ function color(dk){
   else return ck(dk)
 }
 
-
 var partition = d3.partition()
     .size([height, width])
     .padding(0)
     .round(true);
 
-   
-
+//Niveles fuerza, genero
 var svgt = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", mtop)
     .attr("class", "svgt") 
-
+//Titulos
+var g = svgt.append("g").attr("width", width).attr("height", mtop)
+          .attr("x", "0").attr("y", "0");
+//Icicle
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     .attr("transform", "translate(0," + mtop +")")
 
-var divtool = d3.select("body").append("div")
-            .attr("width", "200px").attr("height", "200px").attr("class", "divtool")
-divtool.attr("left", "10px").attr("top", "10px").text("ver");
-   
-
+//Total al hover
+var wc = 400, wl = 300;
+var hc = 400, hl = 600;
 var div = d3.select("body").append("div")
     .attr("class", "tooltip")
-//div.append("div").attr("class", "sp first")
+    .style("width", wc + "px")
+    .style("height", "200px")
+    .style("left", (width+10) + "px").style("top", mtop + "px")
 div.append("div").attr("class", "sp ultimo")
 div.append("div").attr("class", "deep1 sp sp1")
 div.append("div").attr("class", "deep2 sp sp1")
 div.append("div").attr("class", "deep3 sp sp1")  
 
-//Titulos
-var g = svgt.append("g").attr("width", width).attr("height", mtop)
-          .attr("x", "0").attr("y", "0");
 
-var wc = 500, wl = 400;
-var hc = 480, hl = 700;
+
+
+//Svg chart
 var svg2 = d3.select("body").append("svg")
     .attr("width", wc)
     .attr("height", hc)
-    .attr("transform", "translate("+ (width+10) +", 180)")
+    .attr("transform", "translate("+ (width+10) +", 190)")
     .attr("class", "svg2")
 
+//Legend del chart
 var divlegend = d3.select("body").append("div")
-    .attr("width", wl)
-    .attr("height", wl)
-    .attr("class", "legend").style("left", (width+wc) + "px").style("top", "100px")
+    .style("width", wl + "px")
+    .style("height", hl + "px")
+    .attr("class", "legend").style("left", (width+wc) + "px").style("top", "150px")
 var divproc = d3.select("body").append("div")
-    .attr("width", wl-20)
-    .attr("height", 200)
-    .attr("class", "divproc").style("left", width + "px").style("top", "650px")  
+    .style("width", wl + "px")
+    .style("height", 200 + "px")
+    .attr("class", "divproc").style("left", width + "px").style("top", "580px")  
 
 var divpac = d3.select("body").append("div")
     .attr("id", "divpac")
-    .style("width", "380px")
-    .style("height", "800px")
+    .style("width", "300px")
+    .style("height", "600px")
     .attr("class", "divpac").style("left", "1500px").style("top", mtop + "px") 
     .style("overflow-y", "scroll") 
 
@@ -166,7 +166,7 @@ function dall(niveles){
     
     var pos = [[w,2*w], [2*w,3*w], [3*w,4*w]];      
 
-    svg.append("text").text("TOTAL PACIENTES").attr("x", -(mtop + (height/2) + 40)).attr("y", 25).attr("transform", "rotate(-90)").attr("class", "total"); 
+    svg.append("text").text("TOTAL PACIENTES").attr("x", -(mtop + (height/2))).attr("y", 25).attr("transform", "rotate(-90)").attr("class", "total"); 
 
 
   //Enter de los titulos de los niveles

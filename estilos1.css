@@ -1,3 +1,7 @@
+body{
+  font-size: 12px;
+  font-family: "Times New Roman", Georgia, Serif;
+}
 rect {
   stroke: #fff;
   cursor: pointer;
@@ -20,12 +24,9 @@ rect {
 .tooltip{
   position: absolute;
   text-align: center;
-  width: 300px;
-  height: 400px;
   padding: 10px;
   font: 14px sans-serif;
-  left: 710px;
-  top: 20px;
+  
 }
 .first{
   background-color: black;
@@ -33,13 +34,14 @@ rect {
   opacity: 0;
 }
 .tooltip div{
-  height: 25px;
+  height: 15px;
   width: 300px;
   vertical-align: middle;;
   border: 0px;
   border-radius: 0px 100px 100px 0px;
   font-weight: bold;
   padding-top: 2px;
+  font-size: 12px;
 
 }
 .sorted{
@@ -84,7 +86,7 @@ rect {
 }
 .total{
   fill:white;
-  font-size: 25px;
+  font-size: 20px;
 }
 #rangos li{
   cursor:pointer;
@@ -93,7 +95,7 @@ rect {
   text-transform: uppercase;
   cursor: pointer;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 12px;
 
 }
 svg, .legend, .divproc, .divtool, .divpac{
@@ -102,14 +104,13 @@ svg, .legend, .divproc, .divtool, .divpac{
 
 .legend div{
   height: 30px;
-  width: 300px;
   vertical-align: middle;;
   border: 0px;
   border-radius: 100px 0 0 100px;
   font-size: 12px;
   font-weight: bold;
   padding-left: 15px;
-  padding-top: 15px;
+  padding-top: 2px;
   margin-top: 5px;
 }
 
@@ -120,12 +121,12 @@ svg, .legend, .divproc, .divtool, .divpac{
   padding-top: 20px;
   vertical-align: middle;;
   border: 0px;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
   padding-left: 15px;
   padding-top: 15px;
   margin-top: 5px;
-  font-family: sans-serif;
+  font-family: "Times New Roman", Georgia, Serif;
   line-height: 150%;
 }
 
@@ -137,7 +138,7 @@ svg, .legend, .divproc, .divtool, .divpac{
   padding-left: 10px;
   vertical-align: middle;;
   border: 0px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
   border: 1px solid white; 
