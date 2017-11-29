@@ -17,13 +17,19 @@ body {
   stroke: #000;
   stroke-opacity: .7;
   fill-opacity: .7;
+  cursor:pointer;
 }
 
 #controls {
   font-size: 14px;
   position: absolute;
+<<<<<<< HEAD
   top: 400px;
   left: 1000px;
+=======
+  top: 10px;
+  left: 40px;
+>>>>>>> 9e42dfa7c02848e34d4baa46f1c8b445d087e973
 }
 
 input {
@@ -51,6 +57,9 @@ input {
   position: absolute;
   text-align: center;
 }
+.legend{
+  cursor: pointer
+}
 
 
 .d3-tip.n:after {
@@ -69,16 +78,22 @@ input {
 <script src="https://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script>
 
+<<<<<<< HEAD
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 1000 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
+=======
+var margin = {top: 50, right: 40, bottom: 30, left: 40},
+    width = 1200 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom,
+>>>>>>> 9e42dfa7c02848e34d4baa46f1c8b445d087e973
     padding = 1, // separation between nodes
     lengedSpace = 200,
     radius = 6;
 var format = d3.format("$,");
     
 var x = d3.scale.linear()
-    .range([0, width]);
+    .range([0, width-200]);
 
 var y = d3.scale.linear()
     .range([height, 0]);
@@ -117,39 +132,14 @@ controls.append("span")
   .html(function(d) {
     return "<strong>Procedimiento:</strong> <span>" + d.nomProc + "</span><br> <strong>Reintervenciones:</strong> <span>" + d.reintervenciones + "</span><br> <strong>Costo:</strong> <span>" + format(d.costo) + "</span>";
   })
+  .hide(function(d){
+    console.log("ido");
+  })
   svg.call(tip);
   
 
 d3.json("../fileDi.json", function(error, data) {
     if (error) throw error;
-  /*var reinter=new Array();
-  var espe= new Array();
-  var costo= new Array();
-  var datos= new Array();
-  var dn = [];
-  data.forEach(function(d) {
-    for (i=0;i<d.cirugias.length;i++){
-  //  console.log(JSON.stringify(d.cirugias[0].procedimientos));
-        for(j=0;j<d.cirugias[i].procedimientos.length;j++){
-            reinter[d.cirugias[i].procedimientos[j].nomProc]=+d.cirugias[i].hijas.length;
-            espe[d.cirugias[i].procedimientos[j].nomProc]=d.cirugias[i].procedimientos[j].especialidad;
-            for (k=0;k<d.cirugias[i].hijas.length;k++){
-                costo[d.cirugias[i].procedimientos[j].nomProc]=+d.cirugias[i].hijas[k].valorfactura;
-            }
-        }
-    }
- });
- 
-    var keys = [];
-    for (var key in reinter) {
-        // for-in loop goes over all properties including inherited properties
-        // let's use only our own properties
-        if (reinter.hasOwnProperty(key)) {
-            datos.push({"nomProc":key,"especialidad":espe[key],"reintervenciones":reinter[key],"costo":costo[key]});
-            dn.push({"nomProc":key,"especialidad":espe[key],"reintervenciones":reinter[key],"costo":costo[key]});
-        }
-    }
-    console.log(dn);*/
   var ft = {}, k = 0, arrproc = {}; tpac = {};
   data.forEach(function(p){
       tpac[p.id]= p;
@@ -184,7 +174,6 @@ d3.json("../fileDi.json", function(error, data) {
     }
   }
 
-  console.log(datos)
 
   var force = d3.layout.force()
     .nodes(datos)
@@ -211,7 +200,7 @@ d3.json("../fileDi.json", function(error, data) {
       .call(xAxis)
     .append("text")
       .attr("class", "label")
-      .attr("x", width)
+      .attr("x", width-200)
       .attr("y", -6)
       .style("text-anchor", "end")
       .text("Costo de las reintervenciones");
@@ -231,8 +220,20 @@ d3.json("../fileDi.json", function(error, data) {
       .data(datos)
     .enter().append("circle")
       .attr("class", function(d){ return "dot " + pc[d.especialidad]})
+<<<<<<< HEAD
        .on('mouseover',tip.show)
    .on('mouseout', tip.hide)
+=======
+       .on('mouseover', function(d){
+          tip.show(d);
+          d3.selectAll("rect").attr("opacity", 0.2);
+          d3.select(".L" + pc[d.especialidad]).attr("opacity", 1);
+       }) 
+   .on('mouseout', function(d){
+      tip.hide(d);
+      d3.selectAll("rect").attr("opacity", 1);
+    })
+>>>>>>> 9e42dfa7c02848e34d4baa46f1c8b445d087e973
       .attr("r", radius)
       .attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; })

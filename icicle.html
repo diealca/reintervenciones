@@ -41,11 +41,18 @@ var svgt = d3.select("body").append("svg")
 //Titulos
 var g = svgt.append("g").attr("width", width).attr("height", mtop)
           .attr("x", "0").attr("y", "0");
+
+          
 //Icicle
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     .attr("transform", "translate(0," + mtop +")")
+
+var divexp = d3.select("body").append("div")
+    .style("width", "700px")
+    .style("height", (mtop - 30) + "px")
+    .text("Una segunda tarea es descubrir sobre las características del paciente, posibles insights en la medida en que se dan las reintervenciones. Esta visualización permite filtrar, navegar y conocer finalmente en detalle los pacientes que hacen parte del filtro seleccionado")
 
 //Total al hover
 var wc = 400, wl = 300;
@@ -67,7 +74,7 @@ div.append("div").attr("class", "deep3 sp sp1")
 var svg2 = d3.select("body").append("svg")
     .attr("width", wc)
     .attr("height", hc)
-    .attr("transform", "translate("+ (width+10) +", 190)")
+    .attr("transform", "translate("+ (width+10) +", 150)")
     .attr("class", "svg2")
 
 //Legend del chart
@@ -299,6 +306,7 @@ function update2(ent){
   var ft = {"pac": {}}, k = 0, arrproc = {}; tpac = {};
   var wt = 40, cons = 0, esps = {};
   pac.forEach(function(p){
+    console.log(p)
     if(eval(p)){
       tpac[p.id]= p;
       for(var c in p["cirugias"]){
@@ -395,7 +403,7 @@ function update2(ent){
           divproc.html(d.data.key + ": " + esps[d.data.key].value); 
         }else{
           if(!(d3.selectAll(".little").attr("pointer-events") == "none") )
-          divproc.html("Total Reintervenciones: " + d.value);
+          divproc.html("TOTAL REINTERVENCIONES: " + d.value);
         }
           
 
@@ -446,6 +454,7 @@ function update2(ent){
               for(var h in cir.hijas){
                  var hij = cir.hijas[h];
                  txt = txt + "<span>Fecha: " + hij.fecha +  "</span>"
+                 txt = txt + "<span>Valor: " + hij.valorfactura +  "</span>"
                  for(var rtp in hij["procedimientos"]){
                     prtp = hij["procedimientos"][rtp]
                     txt = txt +  '<div> Especialidad: ' + prtp.especialidad + ' -- Procedimiento ' + prtp.nomProc + '</div>';
