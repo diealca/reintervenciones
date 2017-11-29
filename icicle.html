@@ -13,7 +13,7 @@
 var pac = {};
 var width = 550,
     height = 600,
-    mtop = 80;
+    mtop = 100;
 var tra = d3.transition()
       .duration(2000);
 var x = d3.scaleLinear()
@@ -50,9 +50,11 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(0," + mtop +")")
 
 var divexp = d3.select("body").append("div")
-    .style("width", "700px")
+    .style("width", "1000px")
     .style("height", (mtop - 30) + "px")
-    .text("Una segunda tarea es descubrir sobre las características del paciente, posibles insights en la medida en que se dan las reintervenciones. Esta visualización permite filtrar, navegar y conocer finalmente en detalle los pacientes que hacen parte del filtro seleccionado")
+divexp.append("div").html("<h3>Reintervenciones por Características del paciente")
+    .style("top","10px").style("left", "10px");
+divexp.append("div").text("Una segunda tarea es descubrir sobre las características del paciente, posibles insights de acuerdo a su género, edad y fuerza. Esta visualización permite filtrar, navegar y conocer finalmente el detalle los pacientes que hacen parte del filtro seleccionado. A partir de aquí obtienen conclusiones como la mayor cantidad de reintervenciones se dieron en hombres, en personas mayores de 60 pero con pocas diferencias en las siguientes edades y que los clientes con mas reintervenciones pertenencen al ejército nacional como se esperaba")
 
 //Total al hover
 var wc = 400, wl = 300;
@@ -195,6 +197,7 @@ function dall(niveles){
   
      
   function clicked(d) {
+    console.log(niveles);
     d3.selectAll(".litrect").attr("pointer-events", "auto").classed("litrect", false);
     var ent = {}, margin = 40;
     var ac = d;
@@ -218,7 +221,6 @@ function dall(niveles){
       
 
     ac = d;    
-    if(d.depth < 4){
       x.domain([d.y0, width]).range([d.depth ? margin : 0, width]);
       y.domain([d.x0, d.x1]).range([0, height])
       rect.transition()
@@ -231,14 +233,17 @@ function dall(niveles){
                  1: [[margin,(w+margin)], [(w+margin),(2*w + margin)], [(2*w + margin),(3*w + margin)]],
                  2: [[1000,1001], [margin,(w+20)], [(w+margin),(2*w + margin)]],
                  3: [[1000,1101], [1000,1101], [margin,(w+margin)]]} 
+      tit = g.selectAll("text")
+      .data(niveles)
       tit.transition(tra)
       .attr("y", mtop-10)
       .attr("x", function(d, i) { 
+        console.log(i + d)
         k = ((pos[ac.depth][i][1]-pos[ac.depth][i][0]-80)/2) + pos[ac.depth][i][0]; 
         return k; 
       })
       .text(function(d){ return "- " + d + "-" })
-    }    
+
     update2(ent);
   }
   function over(d) {
@@ -306,7 +311,6 @@ function update2(ent){
   var ft = {"pac": {}}, k = 0, arrproc = {}; tpac = {};
   var wt = 40, cons = 0, esps = {};
   pac.forEach(function(p){
-    console.log(p)
     if(eval(p)){
       tpac[p.id]= p;
       for(var c in p["cirugias"]){
