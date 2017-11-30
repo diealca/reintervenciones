@@ -3,8 +3,6 @@
 
   <head>
 
-
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -54,8 +52,8 @@
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     
-    <script src="../d3.v4.min.js"></script>
-<script src="../d3-tip.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script>
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -65,40 +63,30 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
     lengedSpace = 200,
     radius = 6;
 var format = d3.format("$,");
-
-//Scatter Plot elements    
-var x = d3.scaleLinear()
+    
+var x = d3.scale.linear()
     .range([0, width]);
 
-var y = d3.scaleLinear()
+var y = d3.scale.linear()
     .range([height, 0]);
 
-var color = d3.scaleOrdinal(d3.schemeCategory10)
+var color = d3.scale.category10();
 
-var yAxis = d3.axisLeft(y)
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
     .ticks(5);
     
-var xAxis = d3.axisBottom(x)
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
     .tickFormat(format);
 
-//SVG para scatter
 var svg = d3.select("svg")
-    .attr("class", "svgscatter")
     .attr("width", width + margin.left + margin.right + lengedSpace)
     .attr("height", height + margin.top + margin.bottom )
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-//Svg para icicle
-var svgi = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right + lengedSpace)
-    .attr("height", height + margin.top + margin.bottom )
-    .attr("transform", "translate(" + margin.left + "," + margin.top + height + ")"); 
-var partition = d3.partition()
-    .size([height, width])
-    .padding(0)
-    .round(true);
-
 
 var controls = d3.select("body").append("label")
     .attr("id", "controls");
@@ -118,8 +106,6 @@ controls.append("span")
   })
   svg.call(tip);
   
-// End Scatter plot
-
 
 d3.json("../fileDi.json", function(error, data) {
     if (error) throw error;
@@ -158,191 +144,143 @@ d3.json("../fileDi.json", function(error, data) {
     }
   }
 
-
   console.log(datos)
 
+  var force = d3.layout.force()
+    .nodes(datos)
+    .size([width, height])
+    .on("tick", tick)
+    .charge(1)
+    .gravity(0)
+    .chargeDistance(20);
 
+  x.domain(d3.extent(datos, function(d) { return d.costo; })).nice();
+  y.domain([0,50]).nice();
 
-  function updateAll(){
+  // Set initial positions
+  datos.forEach(function(d) {
+    d.x = x(d.costo);
+    d.y = y(d.reintervenciones);
+    d.color = color(d.especialidad);
+    d.radius = radius;
+  });
 
-  //Para el Icicle
-      var niveles = ["genero", "edad", "fuerza"];
-      var arr = {}
-      data.forEach(function(k){
-        if(!arr[k[niveles[0]]]) arr[k[niveles[0]]] = {}
-        if(!arr[k[niveles[0]]][k[niveles[1]]]) arr[k[niveles[0]]][k[niveles[1]]] = {}
-        if(!arr[k[niveles[0]]][k[niveles[1]]][k[niveles[2]]]) arr[k[niveles[0]]][k[niveles[1]]][k[niveles[2]]] = 0
-        arr[k[niveles[0]]][k[niveles[1]]][k[niveles[2]]]++ 
-      })
-      arr2 = {};
-      arr2["pacientes"] = (niveles[0])? arr: d.length;
-      var root = arr2;
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Costo de las reintervenciones");
 
-      root = d3.hierarchy(d3.entries(root)[0], function(d) {
-          return d3.entries(d.value)
-      })
-        .sum(function(d) { 
-            return d.value;
-        })
-      .sort(function(a, b) { return b.value - a.value; });
-      partition(root);
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Número de reintervenciones")
 
-      var init = [], finit = [];
-      var w = 0;    
-      var rect = svgi.selectAll("rect").data(root.descendants());
-      /*rect.attr("x", function(d) { return d.y0; })
-          .attr("y", function(d) { return d.x0})
-          .attr("width", function(d) { w = d.y1 - d.y0; return w; })
-          .attr("height", function(d) { return d.x1 - d.x0; })
-          .attr("fill", function(d) {  return color(d.data.key); })
-          .attr("lev", function(d){  return d.depth})
-      rect = rect.enter().append("rect")
-          .attr("x", function(d) { return d.y0; })
-          .attr("y", function(d) { return d.x0})
-          .attr("width", function(d) { w = d.y1 - d.y0; return w; })
-          .attr("height", function(d) { return d.x1 - d.x0; })
-          .attr("fill", function(d) { return color(d.data.key); })
-          .attr("lev", function(d){  return d.depth})
-          .on("dblclick", function(d){
-            d3.selectAll("rect").each(function(k){
-              if(d3.select(this).attr("lev") > d.depth)
-                d3.select(this).classed("litrect", true)
+  var node = svg.selectAll(".dot")
+      .data(datos)
+    .enter().append("circle")
+      .attr("class", function(d){ return "dot " + pc[d.especialidad]})
+       .on('mouseover',tip.show)
+   .on('mouseout', tip.hide)
+      .attr("r", radius)
+      .attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; })
+      .style("fill", function(d) { return d.color; })
 
-            })
-            d3.selectAll(".litrect").attr("pointer-events", "none")
-          })
-          .on("click", function(){})
-          .on("mouseover", function(){})
-          .on("mouseout", function(){
-            if(d3.event.x > width || d3.event.y < mtop || d3.event.y > (mtop + height)){
-              d3.selectAll(".litrect").attr("pointer-events", "auto")
-            }
-          })
-
-      */
-      //Cierra lo del icicle
-
-
-      /*var force = d3.layout.force()
-        .nodes(datos)
-        .size([width, height])
-        .on("tick", tick)
-        .charge(1)
-        .gravity(0)
-        .chargeDistance(20);*/
-
-      x.domain(d3.extent(datos, function(d) { return d.costo; })).nice();
-      y.domain([0,50]).nice();
-
-      // Set initial positions
-      datos.forEach(function(d) {
-        d.x = x(d.costo);
-        d.y = y(d.reintervenciones);
-        d.color = color(d.especialidad);
-        d.radius = radius;
-      });
-
-      svg.append("g")
-          .attr("class", "axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call(d3.axisBottom(x))
-        .append("text")
-          .attr("class", "label")
-          .attr("x", width)
-          .attr("y", -6)
-          .style("text-anchor", "end")
-          .text("Costo de las reintervenciones");
-
-      svg.append("g")
-          .attr("class", "y axis")
-          .call(yAxis)
-        .append("text")
-          .attr("class", "label")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", ".71em")
-          .style("text-anchor", "end")
-          .text("Número de reintervenciones")
-
-      var node = svg.selectAll(".dot")
-          .data(datos)
-        .enter().append("circle")
-          .attr("class", function(d){ return "dot " + pc[d.especialidad]})
-           .on('mouseover',tip.show)
-       .on('mouseout', tip.hide)
-          .attr("r", radius)
-          .attr("cx", function(d) { return x(d.x); })
-          .attr("cy", function(d) { return y(d.y); })
-          .style("fill", function(d) { return d.color; })
-
-
-          
-     var legend = svg.selectAll(".legend")
-          .data(color.domain())
-        .enter().append("g")
-          .attr("class", "legend")
-          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });             
-
-      legend.append("rect")
-          .attr("x", width + lengedSpace - 18)
-          .attr("width", 18)
-          .attr("height", 18)
-          .style("fill", color)
-          .attr("class", function(d){ return "L" + pc[d] })
-          .on('mouseover', function(d){
-            d3.select(this).attr("width", "20").attr("height", "20");
-            d3.selectAll(".dot").attr("opacity", 0.2);
-            d3.selectAll("." + pc[d]).attr("opacity", 1);
-          })
-          .on('mouseout', function(d){
-            d3.select(this).attr("width", "18").attr("height", "18");
-            d3.selectAll(".dot").attr("opacity", 1);
-           })
-
-      legend.append("text")
-          .attr("x", width + lengedSpace - 24)
-          .attr("y", 9)
-          .attr("dy", ".35em")
-          .style("text-anchor", "end")
-          .text(function(d) { return d; });
-
-        var forceCollide = d3.forceCollide(function(d) { return d.radius; })
-        .strength(0.8);
-    
-        var s = 0.02;
-        
-       
-        var force = d3.forceSimulation(data)
-          .force("x", d3.forceX(function(d) { return d.x; }))
-          .force("y", d3.forceY(function(d) { return d.y; }))
-          .force('center', d3.forceCenter(margin.left + 10, height))
-          .force('collide', forceCollide)
-          .on('tick', function() {
-            svg.selectAll('.dot')
-              .attr('cx', function(d) { return d.x; })
-              .attr('cy', function(d) { return d.y; })
-          })
-          
-         
-
-         d3.select("#collisiondetection").on("change", function() {
-            if(d3.select(this).property("checked")){
-              force.nodes(datos)
-              .alpha(1)
-              .restart()
-            }else{
-
-              force.nodes.stop()
-            }
-            
-          });
-                
 
       
-  }//Cierra Update
-  updateAll()
-});
+ var legend = svg.selectAll(".legend")
+      .data(color.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });             
 
+  legend.append("rect")
+      .attr("x", width + lengedSpace - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color)
+      .attr("class", function(d){ return "L" + pc[d] })
+      .on('mouseover', function(d){
+        d3.select(this).attr("width", "20").attr("height", "20");
+        d3.selectAll(".dot").attr("opacity", 0.2);
+        d3.selectAll("." + pc[d]).attr("opacity", 1);
+      })
+      .on('mouseout', function(d){
+        d3.select(this).attr("width", "18").attr("height", "18");
+        d3.selectAll(".dot").attr("opacity", 1);
+       })
+
+  legend.append("text")
+      .attr("x", width + lengedSpace - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+
+  d3.select("#collisiondetection").on("change", function() {
+   force.resume();
+  });
+
+  force.start();
+
+  function tick(e) {
+    node.each(moveTowardDataPosition(e.alpha));
+
+    if (checkbox.node().checked) node.each(collide(e.alpha)); 
+    
+    node.attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+  }
+
+  function moveTowardDataPosition(alpha) {
+    return function(d) {
+      d.x += (x(d.costo) - d.x) * 0.1 * alpha;
+      d.y += (y(d.reintervenciones) - d.y) * 0.1 * alpha;
+    };
+  }
+
+  // Resolve collisions between nodes.
+  function collide(alpha) {
+    var quadtree = d3.geom.quadtree(datos);
+    return function(d) {
+      var r = d.radius + radius + padding,
+          nx1 = d.x - r,
+          nx2 = d.x + r,
+          ny1 = d.y - r,
+          ny2 = d.y + r;
+      quadtree.visit(function(quad, x1, y1, x2, y2) {
+        if (quad.point && (quad.point !== d)) {
+          var x = d.x - quad.point.x,
+              y = d.y - quad.point.y,
+              l = Math.sqrt(x * x + y * y),
+              r = d.radius + quad.point.radius + (d.color !== quad.point.color) * padding;
+          if (l < r) {
+            l = (l - r) / l * alpha;
+            d.x -= x *= l;
+            d.y -= y *= l;
+            quad.point.x += x;
+            quad.point.y += y;
+          }
+        }
+        return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+      });
+    };
+  }
+
+});
 
 </script>
 
